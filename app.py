@@ -82,8 +82,8 @@ col5, col6 = st.columns(2)
 
 with col5:
     st.subheader("Input Experimental Points")
-    t5 = st.number_input("Temperature 5 ($T_5$) in K:", value=297.7, format="%.1f")
-    t9 = st.number_input("Temperature 9 ($T_9$) in K:", value=314.3, format="%.1f")
+    t5 = st.number_input("Temperature 5 ($T_5$):", value=297.7, format="%.1f")
+    t9 = st.number_input("Temperature 9 ($T_9$):", value=314.3, format="%.1f")
     k5 = st.number_input("Rate Constant 5 ($k_5$):", value=1.99e-5, format="%.2e")
     k9 = st.number_input("Rate Constant 9 ($k_9$):", value=6.25e-5, format="%.2e")
 
