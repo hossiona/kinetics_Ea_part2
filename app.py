@@ -16,6 +16,10 @@ st.title("🧪 Chemical Kinetics Activation Energy Lab Dashboard")
 # Ideal gas constant
 R = 8.314
 
+# Use session state to reliably share Ea_uncat between Part A and Part C
+if 'Ea_uncat' not in st.session_state:
+    st.session_state.Ea_uncat = None
+
 # --- PART A: UNCATALYZED REACTION ---
 st.header("Part A: Activation Energy ($E_a$) of the Uncatalyzed Reaction")
 col1, col2 = st.columns(2)
@@ -33,13 +37,15 @@ with col2:
 
         if len(x_a) == len(y_a) and len(x_a) > 1:
             slope_a, intercept_a = np.polyfit(x_a, y_a, 1)
-            Ea_uncat = -slope_a * R
+            st.session_state.Ea_uncat = -slope_a * R
 
             st.metric(label="Slope ($m$)", value=f"{slope_a:.2f} K")
-            st.metric(label="Activation Energy ($E_a$)", value=f"{Ea_uncat / 1000:.2f} kJ/mol")
+            st.metric(label="Activation Energy ($E_a$)", value=f"{st.session_state.Ea_uncat / 1000:.2f} kJ/mol")
         else:
+            st.session_state.Ea_uncat = None
             st.error("Error: Array lengths must match and have at least 2 data points.")
     except Exception as e:
+        st.session_state.Ea_uncat = None
         st.error(f"Invalid input format. Ensure numbers are comma-separated. Error: {e}")
 
 st.markdown("---")
@@ -92,16 +98,17 @@ with col6:
 
         # Theoretical validation statement block
         st.subheader("Theoretical Evaluation")
-        if 'Ea_uncat' in locals():
-            if Ea_cat_val > Ea_uncat:
+        if st.session_state.Ea_uncat is not None:
+            if Ea_cat_val > st.session_state.Ea_uncat:
                 st.warning(
                     f"⚠️ **Discrepancy Detected:** The activation energy of the catalyzed reaction "
                     f"({Ea_cat_val/1000:.2f} kJ/mol) is **greater** than that of the uncatalyzed reaction "
-                    f"({Ea_uncat/1000:.2f} kJ/mol). This contradicts collision theory, which "
+                    f"({st.session_state.Ea_uncat/1000:.2f} kJ/mol). This contradicts collision theory, which "
                     f"dictates that a catalyst must lower the required activation energy barriers."
                 )
             else:
                 st.success("✅ **Success:** The catalyzed activation energy is lower than the uncatalyzed activation energy, verifying theoretical models.")
+        else:
+            st.info("💡 Complete **Part A** first to compare uncatalyzed and catalyzed kinetics data side-by-side.")
     else:
         st.error("Error: Please provide non-zero temperatures and rate constants.")
-
